@@ -249,6 +249,7 @@ return {
                   '/Kubernetes/**/*',
                   '/kubernetes/**/*',
                 },
+                ['https://raw.githubusercontent.com/jesseduffield/lazygit/master/schema/config.json'] = '/lazygit/config.yml',
                 ['https://raw.githubusercontent.com/microsoft/azure-pipelines-vscode/refs/heads/main/service-schema.json'] = {
                   'azure-pipelines.yml',
                   'PipelineTemplates/**/*',
