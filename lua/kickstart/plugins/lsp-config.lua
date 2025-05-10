@@ -187,10 +187,10 @@ return {
         end,
       })
 
-      -- Workaround for setting virtual buffers to type nofile, so we aren't prompted to changes to them
-      -- This is handled by listing and iterating through them one second after startup because the __virtual.cs file is created later as ahidden buffer by the lsp
+      -- Workaround for setting virtual buffers to type nofile, so we aren't prompted to save changes to them
+      -- This is handled by listing and iterating through them one second after startup because the __virtual.cs file is created later as a hidden buffer by the lsp
       -- and cannot be captured by 'BufEnter', 'BufHidden', 'BufNewFile', 'BufRead', 'BufReadPost' or 'BufWinEnter' events
-      vim.api.nvim_create_autocmd({ 'BufReadPost', 'BufWinEnter' }, {
+      vim.api.nvim_create_autocmd('BufWinEnter', {
         group = vim.api.nvim_create_augroup('rzls-virtual-buffers', { clear = true }),
         callback = function(event)
           vim.defer_fn(function()
