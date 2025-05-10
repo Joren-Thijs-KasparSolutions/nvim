@@ -24,6 +24,7 @@ return {
         'json',
         'terraform',
         'c_sharp',
+        'razor',
         'css',
         'javascript',
         'dart',

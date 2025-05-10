@@ -19,7 +19,28 @@ return {
       -- Automatically install LSPs and related tools to stdpath for Neovim
       -- Mason must be loaded before its dependents so we need to set it up here.
       -- NOTE: `opts = {}` is the same as calling `require('mason').setup({})`
-      { 'williamboman/mason.nvim', opts = {} },
+      {
+        'williamboman/mason.nvim',
+        config = function()
+          require('mason').setup {
+            registries = {
+              'github:Crashdummyy/mason-registry',
+              'github:mason-org/mason-registry',
+            },
+          }
+
+          local registry = require 'mason-registry'
+
+          -- 1. synchronous
+          registry.refresh()
+          local packages = registry.get_all_packages()
+
+          -- 2. asynchronous
+          registry.refresh(function()
+            local packages = registry.get_all_packages()
+          end)
+        end,
+      },
       'williamboman/mason-lspconfig.nvim',
       'WhoIsSethDaniel/mason-tool-installer.nvim',
 
@@ -123,12 +144,14 @@ return {
             end
           end
 
+          local client = vim.lsp.get_client_by_id(event.data.client_id)
+
           -- The following two autocommands are used to highlight references of the
           -- word under your cursor when your cursor rests there for a little while.
           --    See `:help CursorHold` for information about when this is executed
           --
           -- When you move your cursor, the highlights will be cleared (the second autocommand).
-          local client = vim.lsp.get_client_by_id(event.data.client_id)
+
           if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_documentHighlight, event.buf) then
             local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
             vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
@@ -161,6 +184,29 @@ return {
               vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
             end, '[T]oggle Inlay [H]ints')
           end
+        end,
+      })
+
+      -- Workaround for setting virtual buffers to type nofile, so we aren't prompted to changes to them
+      -- This is handled by listing and iterating through them one second after startup because the __virtual.cs file is created later as ahidden buffer by the lsp
+      -- and cannot be captured by 'BufEnter', 'BufHidden', 'BufNewFile', 'BufRead', 'BufReadPost' or 'BufWinEnter' events
+      vim.api.nvim_create_autocmd({ 'BufReadPost', 'BufWinEnter' }, {
+        group = vim.api.nvim_create_augroup('rzls-virtual-buffers', { clear = true }),
+        callback = function(event)
+          vim.defer_fn(function()
+            for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+              local name = vim.api.nvim_buf_get_name(buf)
+              if name:match 'razor' then
+                local razor = require 'rzls.razor'
+                if name:match(razor.virtual_suffixes.csharp .. '$') or name:match(razor.virtual_suffixes.html .. '$') then
+                  vim.api.nvim_set_option_value('buftype', 'nofile', { buf = buf })
+                  vim.api.nvim_set_option_value('buflisted', false, { buf = buf })
+                  vim.api.nvim_set_option_value('swapfile', false, { buf = buf })
+                  vim.api.nvim_set_option_value('readonly', true, { buf = buf })
+                end
+              end
+            end
+          end, 1000)
         end,
       })
 
@@ -260,6 +306,7 @@ return {
             },
           },
         },
+        terraformls = {},
       }
 
       -- Ensure the servers and tools above are installed

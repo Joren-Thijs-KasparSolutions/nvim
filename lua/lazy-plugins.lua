@@ -40,6 +40,7 @@ require('lazy').setup({
   require 'kickstart.plugins.mini',
   require 'kickstart.plugins.treesitter',
   require 'kickstart.plugins.lazygit',
+  require 'kickstart.plugins.roslyn',
 
   -- NOTE: Next step on your Neovim journey: Add/Configure additional plugins for Kickstart
   --
