@@ -21,6 +21,17 @@ return {
       -- NOTE: `opts = {}` is the same as calling `require('mason').setup({})`
       {
         'williamboman/mason.nvim',
+        opts = {
+          'lua-language-server',
+          'xmlformatter',
+          'stylua',
+          'bicep-lsp',
+          'html-lsp',
+          'css-lsp',
+          'csharpier',
+          'prettier',
+          'json-lsp',
+        },
         config = function()
           require('mason').setup {
             registries = {

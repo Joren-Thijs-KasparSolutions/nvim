@@ -41,6 +41,8 @@ require('lazy').setup({
   require 'kickstart.plugins.treesitter',
   require 'kickstart.plugins.lazygit',
   require 'kickstart.plugins.roslyn',
+  require 'kickstart.plugins.neotest',
+  require 'kickstart.plugins.nvim-dap',
 
   -- NOTE: Next step on your Neovim journey: Add/Configure additional plugins for Kickstart
   --
@@ -84,3 +86,10 @@ require('lazy').setup({
     },
   },
 })
+
+---@diagnostic disable-next-line: missing-fields
+require('neotest').setup {
+  adapters = {
+    require 'neotest-dotnet',
+  },
+}

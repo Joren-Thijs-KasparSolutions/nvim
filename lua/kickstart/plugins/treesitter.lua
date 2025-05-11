@@ -11,6 +11,7 @@ return {
         'diff',
         'html',
         'lua',
+        'bicep',
         'luadoc',
         'markdown',
         'markdown_inline',
