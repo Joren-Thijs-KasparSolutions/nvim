@@ -28,6 +28,8 @@ return {
           '--stdio',
           '--logLevel=Information',
           '--extensionLogDirectory=' .. vim.fs.dirname(vim.lsp.get_log_path()),
+          '--extension',
+          '/Users/jorenthijs/.vscode/extensions/ms-dotnettools.csharp-2.72.34-darwin-arm64/.razorExtension/Microsoft.VisualStudioCode.RazorExtension.dll',
         })
 
         local rzls_package = mason_registry.get_package 'rzls'
