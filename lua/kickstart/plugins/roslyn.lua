@@ -7,6 +7,7 @@ return {
         -- By loading as a dependencies, we ensure that we are available to set
         -- the handlers for Roslyn.
         'tris203/rzls.nvim',
+        branch = 'pullDiags',
         config = true,
       },
     },
@@ -23,8 +24,7 @@ return {
       local roslyn_package = mason_registry.get_package 'roslyn'
       if roslyn_package:is_installed() then
         vim.list_extend(cmd, {
-          'dotnet',
-          vim.fs.joinpath(roslyn_package:get_install_path(), 'libexec', 'Microsoft.CodeAnalysis.LanguageServer.dll'),
+          'roslyn',
           '--stdio',
           '--logLevel=Information',
           '--extensionLogDirectory=' .. vim.fs.dirname(vim.lsp.get_log_path()),
@@ -32,7 +32,7 @@ return {
 
         local rzls_package = mason_registry.get_package 'rzls'
         if rzls_package:is_installed() then
-          local rzls_path = vim.fs.joinpath(rzls_package:get_install_path(), 'libexec')
+          local rzls_path = vim.fn.expand '$MASON/packages/rzls/libexec'
           table.insert(cmd, '--razorSourceGenerator=' .. vim.fs.joinpath(rzls_path, 'Microsoft.CodeAnalysis.Razor.Compiler.dll'))
           table.insert(cmd, '--razorDesignTimePath=' .. vim.fs.joinpath(rzls_path, 'Targets', 'Microsoft.NET.Sdk.Razor.DesignTime.targets'))
         end
