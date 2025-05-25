@@ -22,26 +22,39 @@ return {
       local cmd = {}
 
       local roslyn_package = mason_registry.get_package 'roslyn'
+      local rzls_path = vim.fn.expand '$MASON/packages/rzls/libexec'
       if roslyn_package:is_installed() then
         vim.list_extend(cmd, {
           'roslyn',
           '--stdio',
           '--logLevel=Information',
           '--extensionLogDirectory=' .. vim.fs.dirname(vim.lsp.get_log_path()),
-          '--extension',
-          '/Users/jorenthijs/.vscode/extensions/ms-dotnettools.csharp-2.72.34-darwin-arm64/.razorExtension/Microsoft.VisualStudioCode.RazorExtension.dll',
         })
 
         local rzls_package = mason_registry.get_package 'rzls'
         if rzls_package:is_installed() then
-          local rzls_path = vim.fn.expand '$MASON/packages/rzls/libexec'
           table.insert(cmd, '--razorSourceGenerator=' .. vim.fs.joinpath(rzls_path, 'Microsoft.CodeAnalysis.Razor.Compiler.dll'))
           table.insert(cmd, '--razorDesignTimePath=' .. vim.fs.joinpath(rzls_path, 'Targets', 'Microsoft.NET.Sdk.Razor.DesignTime.targets'))
+
+          vim.list_extend(cmd, {
+            '--extension',
+            '/Users/jorenthijs/.vscode/extensions/ms-dotnettools.csharp-2.76.23-darwin-arm64/.razorExtension/Microsoft.VisualStudioCode.RazorExtension.dll',
+          })
         end
       end
-
+      vim.print(vim.inspect(cmd))
       require('roslyn').setup {
-        cmd = cmd,
+        cmd = {
+          'roslyn',
+          '--stdio',
+          '--logLevel=Information',
+          '--extensionLogDirectory=' .. vim.fs.dirname(vim.lsp.get_log_path()),
+          '--razorSourceGenerator=' .. vim.fs.joinpath(rzls_path, 'Microsoft.CodeAnalysis.Razor.Compiler.dll'),
+          '--razorDesignTimePath=' .. vim.fs.joinpath(rzls_path, 'Targets', 'Microsoft.NET.Sdk.Razor.DesignTime.targets'),
+          '--extension',
+          '/Users/jorenthijs/.vscode/extensions/ms-dotnettools.csharp-2.76.23-darwin-arm64/.razorExtension/Microsoft.VisualStudioCode.RazorExtension.dll',
+          -- '--stdio',
+        },
         handlers = require 'rzls.roslyn_handlers',
         settings = {
           ['csharp|inlay_hints'] = {
